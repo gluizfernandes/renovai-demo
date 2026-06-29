@@ -129,7 +129,15 @@ button { font-family: inherit; cursor: pointer; }
 .msg-user { justify-content: flex-end; }
 .msg-bubble { display: inline-block; padding: 11px 15px; border-radius: 14px; font-size: 0.9rem; max-width: 78%; }
 .msg-bot .msg-bubble { background: var(--brand-tint); color: var(--ink); border-bottom-left-radius: 4px; }
+.msg-bot .msg-bubble { max-width: 94%; }
 .msg-user .msg-bubble { background: var(--brand); color: #fff; border-bottom-right-radius: 4px; }
+.genie-table { border-collapse: collapse; margin-top: 10px; background: #fff; border-radius: 8px; overflow: hidden; width: 100%; font-size: 0.84rem; }
+.genie-table th { background: var(--brand); color: #fff; text-align: left; padding: 7px 12px; font-weight: 700; }
+.genie-table td { padding: 6px 12px; border-top: 1px solid var(--line); }
+.genie-table tbody tr:nth-child(even) { background: var(--bg-soft); }
+.genie-sql { margin-top: 10px; }
+.genie-sql summary { cursor: pointer; font-size: 0.8rem; font-weight: 600; color: var(--brand-dark); }
+.genie-sql pre { margin-top: 8px; background: #2b2b2b; color: #f4f4f4; padding: 12px; border-radius: 8px; font-size: 0.78rem; overflow-x: auto; white-space: pre; }
 .chat-input { display: flex; gap: 10px; padding: 14px 16px; border-top: 1px solid var(--line); }
 .chat-input input { flex: 1; border: 1px solid var(--line); border-radius: 10px; padding: 11px 14px; font-size: 0.92rem; font-family: var(--font-body); }
 .chat-input input:focus { outline: 2px solid var(--brand); border-color: transparent; }

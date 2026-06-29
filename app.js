@@ -105,32 +105,47 @@ function renderPrescricao() {
   PRESCRICAO_SUGESTOES.forEach(s => {
     const chip = document.createElement("button");
     chip.className = "chip";
-    chip.textContent = s;
-    chip.onclick = () => enviarPergunta(s);
+    chip.textContent = s.label;
+    chip.onclick = () => enviarPergunta(s.pergunta);
     sug.appendChild(chip);
   });
   if (!chatIniciado) {
-    addMsg("bot", "Olá! Sou o assistente de prescrições do seu setor. Pergunte à vontade ou escolha uma sugestão acima. Esta é uma simulação visual do Chat Genie.");
+    addMsg("bot", "Olá! Este é o Genie Space <strong>RenovAI, Prescrições Médicas POC</strong>. Pergunte em linguagem natural sobre prescrições, especialidades ou linhas comerciais, ou use uma sugestão acima. Simulação visual, respostas fictícias.");
     chatIniciado = true;
   }
 }
-function addMsg(quem, texto) {
+function addMsg(quem, html) {
   const win = $("chat-window");
   const b = document.createElement("div");
   b.className = "msg msg-" + quem;
-  b.innerHTML = `<span class="msg-bubble">${texto}</span>`;
+  b.innerHTML = `<div class="msg-bubble">${html}</div>`;
   win.appendChild(b);
   win.scrollTop = win.scrollHeight;
 }
 function responder(pergunta) {
   const p = pergunta.toLowerCase();
-  const hit = PRESCRICAO_RESPOSTAS.find(r => r.chave.some(c => p.includes(c)));
-  return hit ? hit.resposta : PRESCRICAO_RESPOSTA_PADRAO;
+  if (PRESCRICAO_FORA_ESCOPO_PALAVRAS.some(w => p.includes(w))) {
+    return { texto: PRESCRICAO_FORA_ESCOPO };
+  }
+  return PRESCRICAO_RESPOSTAS.find(r => r.chave.some(c => p.includes(c))) || { texto: PRESCRICAO_RESPOSTA_PADRAO };
+}
+function respostaHTML(ans) {
+  let html = `<div>${ans.texto}</div>`;
+  if (ans.tabela) {
+    const th = ans.tabela.colunas.map(c => `<th>${c}</th>`).join("");
+    const tr = ans.tabela.linhas.map(l => `<tr>${l.map(c => `<td>${c}</td>`).join("")}</tr>`).join("");
+    html += `<table class="genie-table"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table>`;
+  }
+  if (ans.sql) {
+    const sql = ans.sql.replace(/</g, "&lt;");
+    html += `<details class="genie-sql"><summary>Ver SQL gerado</summary><pre>${sql}</pre></details>`;
+  }
+  return html;
 }
 function enviarPergunta(texto) {
   if (!texto.trim()) return;
   addMsg("user", texto);
-  setTimeout(() => addMsg("bot", responder(texto)), 450);
+  setTimeout(() => addMsg("bot", respostaHTML(responder(texto))), 450);
 }
 $("chat-form").addEventListener("submit", (e) => {
   e.preventDefault();

@@ -141,27 +141,73 @@ const MOTIVOS_DESCONSIDERAR = [
   "Outro motivo"
 ];
 
-/* Chat Genie simulado: perguntas rápidas e respostas fictícias.
-   Apenas simulação visual do Genie do Databricks. */
+/* Chat Genie simulado: Genie Space "RenovAI - Prescrições Médicas POC".
+   Perguntas validadas viram atalhos; respostas e números são fictícios.
+   Esta é a consulta técnica de prescrição, onde mostrar números é esperado. */
 const PRESCRICAO_SUGESTOES = [
-  "Quais médicos mais prescrevem no meu setor?",
-  "Como está a Cardiologia neste ciclo?",
-  "Quais médicos caíram de prescrição?",
-  "Quem entrou no top 10 do setor?"
+  { label: "Top 5 medicamentos", pergunta: "Quais são os 5 medicamentos mais prescritos?" },
+  { label: "Mais prescritos em PSQ", pergunta: "Quais medicamentos são mais prescritos pela especialidade PSQ?" },
+  { label: "Top médicos NEU", pergunta: "Quais os 10 médicos da especialidade NEU com mais prescrições?" },
+  { label: "Top 5 da Linha 6", pergunta: "Quais os 5 medicamentos mais prescritos da Linha 6?" },
+  { label: "Total por linha comercial", pergunta: "Qual o total de prescrições por linha comercial?" },
+  { label: "Não prescritos da Linha 6", pergunta: "Quais medicamentos da Linha 6 não foram prescritos?" }
 ];
 
+/* A ordem importa: regras mais específicas primeiro (não prescritos e
+   Linha 6 antes do "top 5" genérico). */
 const PRESCRICAO_RESPOSTAS = [
-  { chave: ["mais prescrevem", "top", "maiores"],
-    resposta: "No seu setor, os médicos com maior prescrição no ciclo atual são Dr. João Silva (Cardiologia), Dra. Ana Souza (Endocrinologia) e Dra. Beatriz Rocha (Ginecologia). Os três aparecem bem posicionados no ranking do setor." },
-  { chave: ["cardiologia", "cardio"],
-    resposta: "A Cardiologia segue como a especialidade de maior volume de prescrição no seu setor neste ciclo, puxada por Dr. João Silva e Dr. Felipe Castro. O movimento é estável em relação ao ciclo anterior." },
-  { chave: ["caíram", "cairam", "queda", "diminu"],
-    resposta: "Entre os médicos do seu painel, Dr. Marcos Lima e Dr. Felipe Castro apresentaram queda de prescrição nos últimos ciclos. Ambos aparecem como sugestão de revisão do painel." },
-  { chave: ["top 10", "entrou", "novos"],
-    resposta: "Dr. João Silva e Dra. Ana Souza ganharam posições e hoje figuram entre os mais bem posicionados do seu setor. Nenhum deles está no seu painel atual, por isso surgem como sugestão de entrada." }
+  {
+    chave: ["não foram prescritos", "nao foram prescritos", "não prescritos", "nao prescritos", "não prescrito"],
+    texto: "Medicamentos da Linha 6 que não foram prescritos no período. São oportunidades de atuação no setor:",
+    tabela: { colunas: ["Medicamento", "Linha"], linhas: [
+      ["DASTENE DUO", "Linha 6"], ["DODIBE", "Linha 6"], ["COMBIRON FÓLICO", "Linha 6"], ["PANT FORT", "Linha 6"]
+    ] }
+  },
+  {
+    chave: ["linha 6"],
+    texto: "Os 5 medicamentos mais prescritos da Linha 6:",
+    tabela: { colunas: ["Medicamento", "Prescrições"], linhas: [
+      ["COLPISTATIN", "6.430"], ["SANY D", "5.890"], ["ADINOS GEN", "4.355"], ["NOVACORT", "3.980"], ["ADINOS", "3.120"]
+    ] }
+  },
+  {
+    chave: ["total", "por linha comercial"],
+    texto: "Total de prescrições por linha comercial. As 6 linhas da força de vendas:",
+    tabela: { colunas: ["Linha comercial", "Prescrições"], linhas: [
+      ["Linha 1", "142.300"], ["Linha 2", "118.770"], ["Linha 3", "99.540"],
+      ["Linha 4", "87.120"], ["Linha 5", "76.450"], ["Linha 6", "64.980"]
+    ] }
+  },
+  {
+    chave: ["psq", "psiquiatr"],
+    texto: "Medicamentos mais prescritos pela especialidade PSQ:",
+    tabela: { colunas: ["Medicamento", "Prescrições"], linhas: [
+      ["VELIJA", "4.210"], ["VENLIFT", "3.985"], ["DUAL", "2.770"], ["ZOLDEN", "2.140"], ["NEURIO", "1.560"]
+    ] }
+  },
+  {
+    chave: ["neu", "neurolog"],
+    texto: "Top 10 médicos da especialidade NEU por prescrições. Nomes fictícios:",
+    tabela: { colunas: ["Médico", "Prescrições"], linhas: [
+      ["Carlos Eduardo Martins", "1.204"], ["Vanessa Ribeiro Lima", "1.118"],
+      ["Gustavo Pereira Rocha", "980"], ["Mariana Cardoso Pinto", "915"], ["André Luiz Barros", "874"]
+    ] }
+  },
+  {
+    chave: ["5 medicamentos", "mais prescritos", "top 5", "mais prescrito"],
+    texto: "Os 5 medicamentos mais prescritos no período:",
+    tabela: { colunas: ["Medicamento", "Prescrições"], linhas: [
+      ["ARADOIS", "18.452"], ["CLAVULIN", "15.230"], ["AEROLIN", "12.987"], ["ARTROSIL", "9.640"], ["COLPISTATIN", "8.115"]
+    ] },
+    sql: "SELECT NOME_MEDICACAO, COUNT(*) AS prescricoes\nFROM prescricoes\nGROUP BY NOME_MEDICACAO\nORDER BY prescricoes DESC\nLIMIT 5;"
+  }
 ];
+
+/* Guarda de escopo: perguntas fora do tema recebem aviso, como na POC real. */
+const PRESCRICAO_FORA_ESCOPO_PALAVRAS = ["tempo", "clima", "previsão", "previsao", "futebol", "jogo", "receita", "piada", "dólar", "dolar", "bolsa"];
+const PRESCRICAO_FORA_ESCOPO = "Pergunta fora do escopo da POC. Posso responder sobre prescrições, especialidades e linhas comerciais.";
 const PRESCRICAO_RESPOSTA_PADRAO =
-  "Com base nas prescrições do seu setor neste ciclo, identifiquei movimentos relevantes no ranking. Você pode detalhar a pergunta por especialidade, período ou médico que eu refino a resposta.";
+  "Posso responder sobre prescrições: medicamentos mais prescritos, recortes por especialidade ou por linha comercial, e o que ainda não foi prescrito. Tente uma das sugestões acima ou refine a pergunta.";
 
 /* Comunicados: materiais da Aché enviados ao propagandista.
    Previews simulados, sem arquivos reais. */
