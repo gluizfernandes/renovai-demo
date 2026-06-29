@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Médico RenovAI 2.0</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Faixa de demo, fixa -->
+  <div class="demo-flag">Ambiente simulado, dados fictícios, sem conexão com Databricks, Azure ou APIs externas</div>
+
+  <!-- ============ LOGIN ============ -->
+  <section id="view-login" class="login">
+    <div class="login-form-side">
+      <div class="login-wordmark">PAINEL MÉDICO RENOVAI 2.0</div>
+      <form class="login-form" id="login-form">
+        <h1>Faça o seu login</h1>
+        <p class="login-sub">Entrar com e-mail e senha</p>
+
+        <label for="login-email">Digite o seu e-mail corporativo</label>
+        <input type="text" id="login-email" value="3fplgeorge@ache.com.br" autocomplete="off" />
+
+        <label for="login-senha">Digite a senha</label>
+        <input type="password" id="login-senha" value="demo1234" autocomplete="off" />
+        <a href="#" class="login-forgot" onclick="return false;">Esqueci minha senha?</a>
+
+        <label for="login-perfil" class="perfil-label">Perfil de acesso (demonstração)</label>
+        <select id="login-perfil">
+          <option value="propagandista">Propagandista</option>
+          <option value="gestor">Gestor / GD</option>
+        </select>
+
+        <button type="submit" class="btn-login">Login</button>
+        <p class="login-hint">Selecione o perfil para simular como o Portal direciona cada usuário.</p>
+      </form>
+    </div>
+    <div class="login-brand-side">
+      <div class="ache-logo">
+        <img src="assets/ache-logo.png" class="ache-img" alt="Aché"
+             onerror="this.style.display='none';document.getElementById('ache-fallback').style.display='inline-block';" />
+        <span class="ache-word" id="ache-fallback" style="display:none;">achē</span>
+        <span class="ache-tag">mais vida para você</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ APP (após login) ============ -->
+  <div id="app" hidden>
+    <aside class="sidebar">
+      <div class="sidebar-brand">RENOVAI<span>2.0</span></div>
+      <nav class="sidebar-nav" id="sidebar-nav"><!-- preenchido por JS --></nav>
+      <button class="sidebar-exit" id="btn-sair">&#8592; Sair</button>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <span class="topbar-perfil" id="topbar-perfil">Propagandista</span>
+        <span class="topbar-user" id="topbar-user">Ricardo Alves</span>
+      </header>
+
+      <main class="content" id="content">
+
+        <!-- HOME PROPAGANDISTA -->
+        <section class="view" id="view-home" hidden>
+          <p class="crumb">Início</p>
+          <h2 class="page-title">Olá, <span id="home-nome">Ricardo</span></h2>
+          <p class="page-sub">Suas entregas no Portal RenovAI</p>
+          <div class="entregas-grid">
+            <button class="entrega-card" data-go="prescricao">
+              <h3>Prescrição</h3>
+              <p>Converse com o assistente e consulte prescrições do seu setor.</p>
+              <span class="entrega-link">Abrir Chat Genie &#8594;</span>
+            </button>
+            <button class="entrega-card" data-go="recomendacoes">
+              <h3>Recomendações</h3>
+              <p>Sugestões pendentes de painel para o seu setor.</p>
+              <span class="entrega-link">Ver recomendações &#8594;</span>
+            </button>
+            <button class="entrega-card" data-go="comunicados">
+              <h3>Comunicados</h3>
+              <p>Materiais e campanhas da Aché para você.</p>
+              <span class="entrega-link">Ver comunicados &#8594;</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- PRESCRIÇÃO, CHAT GENIE SIMULADO -->
+        <section class="view" id="view-prescricao" hidden>
+          <p class="crumb">Prescrição</p>
+          <h2 class="page-title">Prescrição</h2>
+          <p class="page-sub">Simulação visual do Chat Genie do Databricks. Respostas fictícias.</p>
+
+          <div class="chat-wrap">
+            <div class="chat-suggestions" id="chat-suggestions"></div>
+            <div class="chat-window" id="chat-window"></div>
+            <form class="chat-input" id="chat-form">
+              <input type="text" id="chat-text" placeholder="Pergunte sobre prescrições do seu setor..." autocomplete="off" />
+              <button type="submit" class="btn-send">Enviar</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- RECOMENDAÇÕES PROPAGANDISTA -->
+        <section class="view" id="view-recomendacoes" hidden>
+          <p class="crumb">Recomendações</p>
+          <h2 class="page-title">Recomendações do seu setor</h2>
+          <p class="page-sub" id="rec-setor-sub"></p>
+
+          <div class="rec-toolbar">
+            <div class="seg" id="rec-filtro-tipo">
+              <button class="seg-btn active" data-tipo="">Todas</button>
+              <button class="seg-btn" data-tipo="Entrada">Entrada</button>
+              <button class="seg-btn" data-tipo="Revisão">Revisão</button>
+            </div>
+            <span class="rec-count" id="rec-count"></span>
+          </div>
+
+          <div class="rec-grid" id="rec-grid"></div>
+        </section>
+
+        <!-- COMUNICADOS -->
+        <section class="view" id="view-comunicados" hidden>
+          <p class="crumb">Comunicados</p>
+          <h2 class="page-title">Comunicados da Aché</h2>
+          <p class="page-sub">Materiais, slides e campanhas enviados para você.</p>
+          <div class="com-grid" id="com-grid"></div>
+        </section>
+
+        <!-- JORNADA DO GESTOR / GD -->
+        <section class="view" id="view-gestor" hidden>
+          <p class="crumb">Jornada do Gestor / GD</p>
+          <h2 class="page-title">Jornada do Gestor / GD</h2>
+          <p class="page-sub">Visão gerencial consolidada. Mesmas regras de ranking e pontuação das recomendações.</p>
+
+          <div class="kpi-row" id="gestor-kpis"></div>
+
+          <div class="gestor-toolbar">
+            <label for="gestor-setor">Setor / time</label>
+            <select id="gestor-setor"><option value="">Todos os setores</option></select>
+          </div>
+
+          <div class="gestor-table-wrap">
+            <table class="gestor-table" id="gestor-table">
+              <thead>
+                <tr>
+                  <th>Setor</th><th>Responsável</th><th>Médico</th><th>Especialidade</th><th>Cidade</th>
+                  <th>Tipo</th><th>Status</th><th>Ranking</th><th>Pontuação</th><th>Justificativa do descarte</th>
+                </tr>
+              </thead>
+              <tbody id="gestor-tbody"></tbody>
+            </table>
+          </div>
+          <p class="gestor-note">Pontuação é o valor real do ranking, sem teto, e cai conforme a posição piora. Corte de elegibilidade: ranking de 1 a 350 dentro do corte. Médicos fora do corte aparecem como revisão. Regra final a confirmar com o cliente.</p>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal compartilhado -->
+  <div class="modal-overlay" id="modal" hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal-close" id="modal-close" aria-label="Fechar">×</button>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="mock-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
