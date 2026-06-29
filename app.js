@@ -110,7 +110,7 @@ function renderPrescricao() {
     sug.appendChild(chip);
   });
   if (!chatIniciado) {
-    addMsg("bot", "Olá! Este é o Genie Space <strong>RenovAI, Prescrições Médicas POC</strong>. Pergunte em linguagem natural sobre prescrições, especialidades ou linhas comerciais, ou use uma sugestão acima. Simulação visual, respostas fictícias.");
+    addMsg("bot", "Olá! Pergunte sobre prescrições do seu setor, por especialidade ou por linha comercial, ou escolha uma sugestão acima. As informações são ilustrativas.");
     chatIniciado = true;
   }
 }
@@ -134,11 +134,7 @@ function respostaHTML(ans) {
   if (ans.tabela) {
     const th = ans.tabela.colunas.map(c => `<th>${c}</th>`).join("");
     const tr = ans.tabela.linhas.map(l => `<tr>${l.map(c => `<td>${c}</td>`).join("")}</tr>`).join("");
-    html += `<table class="genie-table"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table>`;
-  }
-  if (ans.sql) {
-    const sql = ans.sql.replace(/</g, "&lt;");
-    html += `<details class="genie-sql"><summary>Ver SQL gerado</summary><pre>${sql}</pre></details>`;
+    html += `<table class="chat-table"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table>`;
   }
   return html;
 }

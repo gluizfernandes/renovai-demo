@@ -141,9 +141,8 @@ const MOTIVOS_DESCONSIDERAR = [
   "Outro motivo"
 ];
 
-/* Chat Genie simulado: Genie Space "RenovAI - Prescrições Médicas POC".
-   Perguntas validadas viram atalhos; respostas e números são fictícios.
-   Esta é a consulta técnica de prescrição, onde mostrar números é esperado. */
+/* Consulta de prescrições simulada. Perguntas comuns viram atalhos;
+   respostas e números são fictícios. */
 const PRESCRICAO_SUGESTOES = [
   { label: "Top 5 medicamentos", pergunta: "Quais são os 5 medicamentos mais prescritos?" },
   { label: "Mais prescritos em PSQ", pergunta: "Quais medicamentos são mais prescritos pela especialidade PSQ?" },
@@ -198,14 +197,13 @@ const PRESCRICAO_RESPOSTAS = [
     texto: "Os 5 medicamentos mais prescritos no período:",
     tabela: { colunas: ["Medicamento", "Prescrições"], linhas: [
       ["ARADOIS", "18.452"], ["CLAVULIN", "15.230"], ["AEROLIN", "12.987"], ["ARTROSIL", "9.640"], ["COLPISTATIN", "8.115"]
-    ] },
-    sql: "SELECT NOME_MEDICACAO, COUNT(*) AS prescricoes\nFROM prescricoes\nGROUP BY NOME_MEDICACAO\nORDER BY prescricoes DESC\nLIMIT 5;"
+    ] }
   }
 ];
 
-/* Guarda de escopo: perguntas fora do tema recebem aviso, como na POC real. */
+/* Perguntas fora do tema recebem um aviso amigável. */
 const PRESCRICAO_FORA_ESCOPO_PALAVRAS = ["tempo", "clima", "previsão", "previsao", "futebol", "jogo", "receita", "piada", "dólar", "dolar", "bolsa"];
-const PRESCRICAO_FORA_ESCOPO = "Pergunta fora do escopo da POC. Posso responder sobre prescrições, especialidades e linhas comerciais.";
+const PRESCRICAO_FORA_ESCOPO = "Posso responder apenas sobre prescrições, especialidades e linhas comerciais. Tente reformular a pergunta.";
 const PRESCRICAO_RESPOSTA_PADRAO =
   "Posso responder sobre prescrições: medicamentos mais prescritos, recortes por especialidade ou por linha comercial, e o que ainda não foi prescrito. Tente uma das sugestões acima ou refine a pergunta.";
 
